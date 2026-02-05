@@ -1,0 +1,473 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "Dataverse Bulk Operations",
+    "description": "Custom connector to perform CreateMultiple and UpdateMultiple operations on Dataverse tables. These operations allow bulk creation and updating of records in a single API call for improved performance.",
+    "version": "1.0.0"
+  },
+  "host": "placeholder.crm.dynamics.com",
+  "basePath": "/api/data/v9.2",
+  "schemes": [
+    "https"
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/{entitySetName}/Microsoft.Dynamics.CRM.CreateMultiple": {
+      "post": {
+        "operationId": "CreateMultiple",
+        "summary": "Create Multiple Records",
+        "description": "Creates multiple records in a Dataverse table in a single operation. This is more efficient than creating records one at a time.",
+        "parameters": [
+          {
+            "name": "entitySetName",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "The plural name of the entity set (e.g., 'accounts', 'contacts', 'leads')",
+            "x-ms-summary": "Table Name (Plural)",
+            "x-ms-url-encoding": "single"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "description": "The request body containing the array of records to create",
+            "schema": {
+              "$ref": "#/definitions/CreateMultipleRequest"
+            }
+          },
+          {
+            "name": "Prefer",
+            "in": "header",
+            "required": false,
+            "type": "string",
+            "default": "return=representation",
+            "description": "Set to 'return=representation' to return created records",
+            "x-ms-summary": "Return Preference",
+            "x-ms-visibility": "advanced"
+          },
+          {
+            "name": "MSCRM.SuppressDuplicateDetection",
+            "in": "header",
+            "required": false,
+            "type": "boolean",
+            "default": false,
+            "description": "Set to true to suppress duplicate detection",
+            "x-ms-summary": "Suppress Duplicate Detection",
+            "x-ms-visibility": "advanced"
+          },
+          {
+            "name": "MSCRM.BypassCustomPluginExecution",
+            "in": "header",
+            "required": false,
+            "type": "boolean",
+            "default": false,
+            "description": "Set to true to bypass custom plugin execution (requires privilege)",
+            "x-ms-summary": "Bypass Plugin Execution",
+            "x-ms-visibility": "advanced"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success - Returns the created records when Prefer header is set to return=representation",
+            "schema": {
+              "$ref": "#/definitions/CreateMultipleResponse"
+            }
+          },
+          "204": {
+            "description": "Success - No content returned"
+          },
+          "400": {
+            "description": "Bad Request - Invalid request body or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - Authentication failed"
+          },
+          "403": {
+            "description": "Forbidden - Insufficient permissions"
+          }
+        }
+      }
+    },
+    "/{entitySetName}/Microsoft.Dynamics.CRM.UpdateMultiple": {
+      "post": {
+        "operationId": "UpdateMultiple",
+        "summary": "Update Multiple Records",
+        "description": "Updates multiple records in a Dataverse table in a single operation. Each record must include its primary key (e.g., accountid for accounts). This is more efficient than updating records one at a time.",
+        "parameters": [
+          {
+            "name": "entitySetName",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "The plural name of the entity set (e.g., 'accounts', 'contacts', 'leads')",
+            "x-ms-summary": "Table Name (Plural)",
+            "x-ms-url-encoding": "single"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "description": "The request body containing the array of records to update (each must include the primary key)",
+            "schema": {
+              "$ref": "#/definitions/UpdateMultipleRequest"
+            }
+          },
+          {
+            "name": "Prefer",
+            "in": "header",
+            "required": false,
+            "type": "string",
+            "default": "return=representation",
+            "description": "Set to 'return=representation' to return updated records",
+            "x-ms-summary": "Return Preference",
+            "x-ms-visibility": "advanced"
+          },
+          {
+            "name": "MSCRM.BypassCustomPluginExecution",
+            "in": "header",
+            "required": false,
+            "type": "boolean",
+            "default": false,
+            "description": "Set to true to bypass custom plugin execution (requires privilege)",
+            "x-ms-summary": "Bypass Plugin Execution",
+            "x-ms-visibility": "advanced"
+          },
+          {
+            "name": "If-Match",
+            "in": "header",
+            "required": false,
+            "type": "string",
+            "description": "ETag value for optimistic concurrency control",
+            "x-ms-summary": "ETag (Concurrency)",
+            "x-ms-visibility": "advanced"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success - Returns the updated records when Prefer header is set to return=representation",
+            "schema": {
+              "$ref": "#/definitions/UpdateMultipleResponse"
+            }
+          },
+          "204": {
+            "description": "Success - No content returned"
+          },
+          "400": {
+            "description": "Bad Request - Invalid request body or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - Authentication failed"
+          },
+          "403": {
+            "description": "Forbidden - Insufficient permissions"
+          },
+          "404": {
+            "description": "Not Found - One or more records not found"
+          },
+          "412": {
+            "description": "Precondition Failed - ETag mismatch (record was modified)"
+          }
+        }
+      }
+    },
+    "/transform/CreateMultipleRequest": {
+      "post": {
+        "operationId": "FormatCreateMultipleRequest",
+        "summary": "Format Array for CreateMultiple",
+        "description": "Transforms an array of records into the Targets format required by CreateMultiple. Use this to prepare your data before calling CreateMultiple.",
+        "x-ms-visibility": "important",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "description": "The array of records to transform",
+            "schema": {
+              "$ref": "#/definitions/ArrayInput"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success - Returns the formatted request body",
+            "schema": {
+              "$ref": "#/definitions/CreateMultipleRequest"
+            }
+          }
+        }
+      }
+    },
+    "/transform/UpdateMultipleRequest": {
+      "post": {
+        "operationId": "FormatUpdateMultipleRequest",
+        "summary": "Format Array for UpdateMultiple",
+        "description": "Transforms an array of records into the Targets format required by UpdateMultiple. Each record should include its primary key. Use this to prepare your data before calling UpdateMultiple.",
+        "x-ms-visibility": "important",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "description": "The array of records to transform (each must include primary key)",
+            "schema": {
+              "$ref": "#/definitions/ArrayInput"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success - Returns the formatted request body",
+            "schema": {
+              "$ref": "#/definitions/UpdateMultipleRequest"
+            }
+          }
+        }
+      }
+    },
+    "/transform/UpsertMultipleRequest": {
+      "post": {
+        "operationId": "FormatUpsertMultipleRequest",
+        "summary": "Format Array for UpsertMultiple",
+        "description": "Transforms an array of records into the Targets format required by UpsertMultiple. Use this to prepare your data before calling UpsertMultiple.",
+        "x-ms-visibility": "important",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "description": "The array of records to transform",
+            "schema": {
+              "$ref": "#/definitions/ArrayInput"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success - Returns the formatted request body",
+            "schema": {
+              "$ref": "#/definitions/UpsertMultipleRequest"
+            }
+          }
+        }
+      }
+    },
+    "/{entitySetName}/Microsoft.Dynamics.CRM.UpsertMultiple": {
+      "post": {
+        "operationId": "UpsertMultiple",
+        "summary": "Upsert Multiple Records",
+        "description": "Creates or updates multiple records in a Dataverse table in a single operation. Records with existing primary keys will be updated, new records will be created.",
+        "parameters": [
+          {
+            "name": "entitySetName",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "The plural name of the entity set (e.g., 'accounts', 'contacts', 'leads')",
+            "x-ms-summary": "Table Name (Plural)",
+            "x-ms-url-encoding": "single"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "description": "The request body containing the array of records to upsert",
+            "schema": {
+              "$ref": "#/definitions/UpsertMultipleRequest"
+            }
+          },
+          {
+            "name": "Prefer",
+            "in": "header",
+            "required": false,
+            "type": "string",
+            "default": "return=representation",
+            "description": "Set to 'return=representation' to return upserted records",
+            "x-ms-summary": "Return Preference",
+            "x-ms-visibility": "advanced"
+          },
+          {
+            "name": "MSCRM.SuppressDuplicateDetection",
+            "in": "header",
+            "required": false,
+            "type": "boolean",
+            "default": false,
+            "description": "Set to true to suppress duplicate detection",
+            "x-ms-summary": "Suppress Duplicate Detection",
+            "x-ms-visibility": "advanced"
+          },
+          {
+            "name": "MSCRM.BypassCustomPluginExecution",
+            "in": "header",
+            "required": false,
+            "type": "boolean",
+            "default": false,
+            "description": "Set to true to bypass custom plugin execution (requires privilege)",
+            "x-ms-summary": "Bypass Plugin Execution",
+            "x-ms-visibility": "advanced"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success - Returns the upserted records when Prefer header is set to return=representation",
+            "schema": {
+              "$ref": "#/definitions/UpsertMultipleResponse"
+            }
+          },
+          "204": {
+            "description": "Success - No content returned"
+          },
+          "400": {
+            "description": "Bad Request - Invalid request body or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - Authentication failed"
+          },
+          "403": {
+            "description": "Forbidden - Insufficient permissions"
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "CreateMultipleRequest": {
+      "type": "object",
+      "required": [
+        "Targets"
+      ],
+      "properties": {
+        "Targets": {
+          "type": "array",
+          "description": "Array of records to create. Each record should contain the column values for the new record.",
+          "items": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        }
+      }
+    },
+    "CreateMultipleResponse": {
+      "type": "object",
+      "properties": {
+        "Ids": {
+          "type": "array",
+          "description": "Array of GUIDs for the created records",
+          "items": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      }
+    },
+    "UpdateMultipleRequest": {
+      "type": "object",
+      "required": [
+        "Targets"
+      ],
+      "properties": {
+        "Targets": {
+          "type": "array",
+          "description": "Array of records to update. Each record must include the primary key column (e.g., accountid) and the columns to update.",
+          "items": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        }
+      }
+    },
+    "UpdateMultipleResponse": {
+      "type": "object",
+      "properties": {
+        "@odata.context": {
+          "type": "string"
+        },
+        "value": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        }
+      }
+    },
+    "UpsertMultipleRequest": {
+      "type": "object",
+      "required": [
+        "Targets"
+      ],
+      "properties": {
+        "Targets": {
+          "type": "array",
+          "description": "Array of records to upsert. Include primary key for updates, omit for creates.",
+          "items": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        }
+      }
+    },
+    "UpsertMultipleResponse": {
+      "type": "object",
+      "properties": {
+        "Ids": {
+          "type": "array",
+          "description": "Array of GUIDs for the upserted records",
+          "items": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      }
+    },
+    "ArrayInput": {
+      "type": "object",
+      "required": [
+        "records"
+      ],
+      "properties": {
+        "records": {
+          "type": "array",
+          "description": "Array of records to transform into Targets format",
+          "items": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        }
+      }
+    }
+  },
+  "securityDefinitions": {
+    "oauth2_auth": {
+      "type": "oauth2",
+      "flow": "accessCode",
+      "authorizationUrl": "https://login.microsoftonline.com/common/oauth2/authorize",
+      "tokenUrl": "https://login.microsoftonline.com/common/oauth2/token",
+      "scopes": {}
+    }
+  },
+  "security": [
+    {
+      "oauth2_auth": []
+    }
+  ],
+  "x-ms-connector-metadata": [
+    {
+      "propertyName": "Website",
+      "propertyValue": "https://docs.microsoft.com/en-us/power-apps/developer/data-platform/webapi/overview"
+    },
+    {
+      "propertyName": "Privacy policy",
+      "propertyValue": "https://privacy.microsoft.com/en-us/privacystatement"
+    },
+    {
+      "propertyName": "Categories",
+      "propertyValue": "Data;Business Intelligence"
+    }
+  ]
+}

@@ -1,0 +1,227 @@
+{
+  "properties": {
+    "connectionParameters": {
+      "environment": {
+        "type": "string",
+        "uiDefinition": {
+          "displayName": "Environment URL",
+          "description": "The Dataverse environment URL (e.g., orgb9a08c28.crm4.dynamics.com)",
+          "tooltip": "Enter your Dataverse environment URL without https://",
+          "constraints": {
+            "tabIndex": 1,
+            "required": "true"
+          }
+        }
+      },
+      "clientId": {
+        "type": "string",
+        "uiDefinition": {
+          "displayName": "Client ID",
+          "description": "The Azure AD Application (client) ID",
+          "tooltip": "Enter the Application (client) ID from your Azure AD app registration",
+          "constraints": {
+            "tabIndex": 2,
+            "required": "true"
+          }
+        }
+      },
+      "clientSecret": {
+        "type": "securestring",
+        "uiDefinition": {
+          "displayName": "Client Secret",
+          "description": "The Azure AD Application client secret",
+          "tooltip": "Enter the client secret from your Azure AD app registration",
+          "constraints": {
+            "tabIndex": 3,
+            "clearText": false,
+            "required": "true"
+          }
+        }
+      },
+      "token": {
+        "type": "oauthSetting",
+        "oAuthSettings": {
+          "identityProvider": "oauth2generic",
+          "scopes": [],
+          "redirectMode": "Global",
+          "redirectUrl": "https://global.consent.azure-apim.net/redirect",
+          "properties": {
+            "IsFirstParty": "False",
+            "IsOnbehalfofLoginSupported": true
+          },
+          "customParameters": {
+            "authorizationUrlTemplate": {
+              "value": "https://login.microsoftonline.com/common/oauth2/authorize?resource=https://@connectionParameters('environment')"
+            },
+            "authorizationUrlQueryStringTemplate": {
+              "value": "?resource=https://@connectionParameters('environment')"
+            },
+            "tokenUrlTemplate": {
+              "value": "https://login.microsoftonline.com/common/oauth2/token"
+            },
+            "refreshUrlTemplate": {
+              "value": "https://login.microsoftonline.com/common/oauth2/token"
+            },
+            "clientIdTemplate": {
+              "value": "@connectionParameters('clientId')"
+            },
+            "clientSecretTemplate": {
+              "value": "@connectionParameters('clientSecret')"
+            }
+          }
+        },
+        "uiDefinition": {
+          "displayName": "Sign in with your Microsoft account",
+          "description": "Sign in with your Microsoft account to access Dataverse",
+          "constraints": {
+            "tabIndex": 4,
+            "required": "true"
+          }
+        }
+      }
+    },
+    "connectionParameterSets": {
+      "uiDefinition": {
+        "displayName": "Authentication Type",
+        "description": "Type of authentication to be used."
+      },
+      "values": [
+        {
+          "name": "oauthCustomApp",
+          "uiDefinition": {
+            "displayName": "OAuth 2.0 with Custom App",
+            "description": "Connect using your own Azure AD app registration"
+          },
+          "parameters": {
+            "environment": {
+              "type": "string",
+              "uiDefinition": {
+                "displayName": "Environment URL",
+                "description": "The Dataverse environment URL (e.g., orgb9a08c28.crm4.dynamics.com)",
+                "tooltip": "Enter your Dataverse environment URL without https://",
+                "constraints": {
+                  "tabIndex": 1,
+                  "required": "true"
+                }
+              }
+            },
+            "clientId": {
+              "type": "string",
+              "uiDefinition": {
+                "displayName": "Client ID",
+                "description": "The Azure AD Application (client) ID",
+                "tooltip": "Enter the Application (client) ID from your Azure AD app registration",
+                "constraints": {
+                  "tabIndex": 2,
+                  "required": "true"
+                }
+              }
+            },
+            "clientSecret": {
+              "type": "securestring",
+              "uiDefinition": {
+                "displayName": "Client Secret",
+                "description": "The Azure AD Application client secret",
+                "tooltip": "Enter the client secret from your Azure AD app registration",
+                "constraints": {
+                  "tabIndex": 3,
+                  "clearText": false,
+                  "required": "true"
+                }
+              }
+            },
+            "token": {
+              "type": "oauthSetting",
+              "oAuthSettings": {
+                "identityProvider": "oauth2generic",
+                "scopes": [],
+                "redirectMode": "Global",
+                "redirectUrl": "https://global.consent.azure-apim.net/redirect",
+                "properties": {
+                  "IsFirstParty": "False",
+                  "IsOnbehalfofLoginSupported": true
+                },
+                "customParameters": {
+                  "authorizationUrlTemplate": {
+                    "value": "https://login.microsoftonline.com/common/oauth2/authorize?resource=https://@connectionParameters('environment')"
+                  },
+                  "authorizationUrlQueryStringTemplate": {
+                    "value": "?resource=https://@connectionParameters('environment')"
+                  },
+                  "tokenUrlTemplate": {
+                    "value": "https://login.microsoftonline.com/common/oauth2/token"
+                  },
+                  "refreshUrlTemplate": {
+                    "value": "https://login.microsoftonline.com/common/oauth2/token"
+                  },
+                  "clientIdTemplate": {
+                    "value": "@connectionParameters('clientId')"
+                  },
+                  "clientSecretTemplate": {
+                    "value": "@connectionParameters('clientSecret')"
+                  }
+                }
+              },
+              "uiDefinition": {
+                "displayName": "Sign in with your Microsoft account",
+                "description": "Sign in with your Microsoft account to access Dataverse",
+                "constraints": {
+                  "tabIndex": 4,
+                  "required": "true"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "iconBrandColor": "#742774",
+    "scriptOperations": [
+      "FormatCreateMultipleRequest",
+      "FormatUpdateMultipleRequest",
+      "FormatUpsertMultipleRequest"
+    ],
+    "policyTemplateInstances": [
+      {
+        "templateId": "setheader",
+        "title": "Set OData-MaxVersion Header",
+        "parameters": {
+          "x-ms-apimTemplateParameter.name": "OData-MaxVersion",
+          "x-ms-apimTemplateParameter.value": "4.0",
+          "x-ms-apimTemplateParameter.existsAction": "skip",
+          "x-ms-apimTemplate-policySection": "Request"
+        }
+      },
+      {
+        "templateId": "setheader",
+        "title": "Set OData-Version Header",
+        "parameters": {
+          "x-ms-apimTemplateParameter.name": "OData-Version",
+          "x-ms-apimTemplateParameter.value": "4.0",
+          "x-ms-apimTemplateParameter.existsAction": "skip",
+          "x-ms-apimTemplate-policySection": "Request"
+        }
+      },
+      {
+        "templateId": "setheader",
+        "title": "Set Accept Header",
+        "parameters": {
+          "x-ms-apimTemplateParameter.name": "Accept",
+          "x-ms-apimTemplateParameter.value": "application/json",
+          "x-ms-apimTemplateParameter.existsAction": "skip",
+          "x-ms-apimTemplate-policySection": "Request"
+        }
+      },
+      {
+        "templateId": "dynamichosturl",
+        "title": "Set Dynamic Host URL",
+        "parameters": {
+          "x-ms-apimTemplateParameter.urlTemplate": "https://@connectionParameters('environment')"
+        }
+      }
+    ],
+    "capabilities": [],
+    "publisher": "Custom",
+    "stackOwner": "Custom"
+  }
+}
